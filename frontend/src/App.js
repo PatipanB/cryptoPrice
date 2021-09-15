@@ -1,23 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import {useEffect, useState} from "react";
+import {getPriceBySymbol} from "./services/getPriceService";
+import "./App.css";
+import Navbar from "./components/Navbar/Navbar";
+import SearchArea from "./components/SearchArea/SearchArea";
+import CandleChart from "./components/CandleChart/CandleChart";
 
 function App() {
+  const [data, setData] = useState([]);
+  const [coin, setCoin] = useState([]);
+
+  const fetchData = async (symbol) => {
+    const response = await getPriceBySymbol(symbol);
+    setData(response);
+    setCoin(symbol);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Navbar />
+      <SearchArea fetchData={fetchData} />
+      {data.length > 1 && <CandleChart data={data} coin={coin} />}
     </div>
   );
 }
