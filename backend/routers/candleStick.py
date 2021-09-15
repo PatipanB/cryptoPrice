@@ -9,6 +9,16 @@ router = APIRouter(
     responses={404: {"message": "Not Found"}}
 )
 
+@router.get('/all')
+async def getAllSymbols():
+    client = Client("","")
+    all_tickets = client.get_all_tickers()
+    output = []
+    for coin in all_tickets:
+        output.append({'value': coin['symbol']}) 
+    
+    return output
+
 @router.get('/{symbol}')
 async def getCandleStick(symbol: str):
     
@@ -20,13 +30,18 @@ async def getCandleStick(symbol: str):
     
     data = []
     columns = ["Time", "Open", "High", "Low", "Close"]
+    coltonumeric = ["Open", "High", "Low", "Close"]
     
     for cs in candles:
         cs[0] = datetime.datetime.fromtimestamp((cs[0]/1000)).strftime('%Y-%m-%d %H:%M:%S') 
-        data.append(cs[:5])   
-
+        data.append(cs[:5])  
+        
     df = pd.DataFrame(data, columns=columns)
-    response = df.to_dict('records')
+    
+    df[coltonumeric] = df[coltonumeric].apply(pd.to_numeric)
+    response = df.values.tolist()
     
     return response
+
+
     
