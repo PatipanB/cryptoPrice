@@ -26,14 +26,17 @@ async def getCandleStick(symbol: str):
     WEEK_AGO = str(datetime.datetime.now() - datetime.timedelta(days=7))
     
     client = Client("", "")
-    candles = client.get_historical_klines(symbol, Client.KLINE_INTERVAL_30MINUTE, WEEK_AGO, NOW)
+    candles = client.get_historical_klines(symbol, Client.KLINE_INTERVAL_1HOUR, WEEK_AGO, NOW)
     
     data = []
     columns = ["Time", "Open", "High", "Low", "Close"]
     coltonumeric = ["Open", "High", "Low", "Close"]
     
     for cs in candles:
-        cs[0] = datetime.datetime.fromtimestamp((cs[0]/1000)).strftime('%Y-%m-%d %H:%M:%S') 
+        cs[0] = datetime.datetime.fromtimestamp((cs[0]/1000)).strftime('%Y-%m-%d %H:%M:%S')
+        cs[1], cs[2] = cs[2], cs[1]
+        cs[3], cs[4] = cs[4], cs[3]
+        cs[1], cs[4] = cs[4], cs[1]
         data.append(cs[:5])  
         
     df = pd.DataFrame(data, columns=columns)
